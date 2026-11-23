@@ -27,6 +27,8 @@
 
 Agent 会下载技能、核对文件校验值，并给你一个授权链接：在浏览器里用手机号验证码登录（没有账号自动注册，新用户送体验积分），点“授权”即可，**不需要复制任何密钥**。
 
+**从 GitHub 安装**：`git clone https://github.com/beiliai/beiliai-skills ~/.claude/skills/beiliai-skills`（Codex 换成 `~/.codex/skills/beiliai-skills`），然后运行 `python ~/.claude/skills/beiliai-skills/scripts/beiliai.py login`。
+
 **手动安装**：把本仓库的 `SKILL.md` 和 `scripts/beiliai.py` 放到客户端的技能目录下（保持目录结构）：
 
 | 客户端 | 目录 |

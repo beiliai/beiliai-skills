@@ -9,7 +9,7 @@
   - `SKILL.md`
   - `scripts/beiliai.py`
 
-只从 `https://www.beiliai.com` 下载。下载后按 manifest.json 核对每个文件的 SHA-256，不一致就停止并告诉用户。
+只从 `https://www.beiliai.com` 下载（同样的文件也在 GitHub 公开：https://github.com/beiliai/beiliai-skills ，用户要求从 GitHub 安装时可 `git clone` 该仓库到下文的安装目录，同样要核对 manifest.json 里的校验值）。下载后按 manifest.json 核对每个文件的 SHA-256，不一致就停止并告诉用户。
 
 ## 2. 选择安装目录
 
