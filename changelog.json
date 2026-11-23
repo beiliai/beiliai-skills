@@ -1,5 +1,12 @@
 [
   {
+    "version": "1.5.0",
+    "date": "2026-11-23",
+    "notes": [
+      "支持 WorkBuddy 连接器：pip 安装包、status --check、logout --revoke（断开连接时作废服务端密钥）"
+    ]
+  },
+  {
     "version": "1.4.1",
     "date": "2026-11-23",
     "notes": [

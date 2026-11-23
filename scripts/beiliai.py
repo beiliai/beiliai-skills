@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""贝礼 AI 命令行（技能 beiliai-skills v1.4.1：AI 拉片与视频拆解）。
+"""贝礼 AI 命令行（技能 beiliai-skills v1.5.0：AI 拉片与视频拆解）。
 
 只依赖 Python 3.8+ 标准库，Windows / macOS / Linux 通用。
 密钥只保存在本机 ~/.beiliai/credentials.json（权限 600），任何输出都不会打印密钥。
@@ -21,7 +21,8 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-VERSION = "1.4.1"
+VERSION = "1.5.0"
+DISTRIBUTION = "skill"  # 打成 pip 包（WorkBuddy 连接器）时改为 "workbuddy"
 DEFAULT_API_BASE = "https://www.beiliai.com/beiliai-api"
 DEFAULT_WEB_BASE = "https://www.beiliai.com"
 DEFAULT_TYPES = ["hot", "transition", "asr"]
@@ -220,6 +221,8 @@ def detect_client() -> str:
         return "claude-code"
     if os.environ.get("CODEX_HOME") or os.environ.get("CODEX_SANDBOX"):
         return "codex"
+    if install_channel() == "workbuddy" or os.environ.get("WORKBUDDY_SESSION_ID") or os.environ.get("CODEBUDDY_SESSION_ID"):
+        return "workbuddy"
     return "other"
 
 
@@ -258,6 +261,39 @@ def login_start(args) -> int:
     return EXIT_OK
 
 
+def save_login_result(data: dict, creds: dict) -> None:
+    write_private_json(credentials_path(), {
+        "api_key": str(data.get("api_key") or ""),
+        "key_name": data.get("key_name") or "",
+        "api_base": (data.get("api_base") or creds["api_base"]).rstrip("/"),
+        "web_base": (data.get("web_base") or creds["web_base"]).rstrip("/"),
+        "saved_at": int(time.time()),
+    })
+    pending_login_path().unlink(missing_ok=True)
+
+
+def complete_pending_login_once(timeout: float = 5.0) -> bool:
+    """有进行中的授权时查询一次；用户已在网页上授权就保存凭据并返回 True。失败或未完成返回 False，不报错。"""
+    pending = read_json(pending_login_path(), None)
+    if not pending or not pending.get("device_code"):
+        return False
+    if time.time() >= float(pending.get("expires_at") or 0):
+        pending_login_path().unlink(missing_ok=True)
+        return False
+    creds = load_credentials()
+    creds["api_base"] = pending.get("api_base") or creds["api_base"]
+    try:
+        data = request("POST", "/api/agent-auth/token", {"device_code": pending["device_code"]}, auth=False, creds=creds, timeout=timeout)
+    except ApiError as err:
+        if err.code in ("access_denied", "expired_token", "invalid_device_code"):
+            pending_login_path().unlink(missing_ok=True)
+        return False
+    if not data.get("api_key"):
+        return False
+    save_login_result(data, creds)
+    return True
+
+
 def login_wait(args) -> int:
     pending = read_json(pending_login_path(), None)
     if not pending or not pending.get("device_code"):
@@ -289,18 +325,10 @@ def login_wait(args) -> int:
                 time.sleep(interval)
                 continue
             return report_api_error(err, creds)
-        api_key = str(data.get("api_key") or "")
-        if not api_key:
+        if not str(data.get("api_key") or ""):
             out("服务端没有返回密钥，请重新运行 login。")
             return EXIT_API
-        write_private_json(credentials_path(), {
-            "api_key": api_key,
-            "key_name": data.get("key_name") or "",
-            "api_base": (data.get("api_base") or creds["api_base"]).rstrip("/"),
-            "web_base": (data.get("web_base") or creds["web_base"]).rstrip("/"),
-            "saved_at": int(time.time()),
-        })
-        pending_login_path().unlink(missing_ok=True)
+        save_login_result(data, creds)
         out("授权成功（密钥名称：%s）。凭据已保存到 %s（仅本机可读，内容不会显示）。" % (data.get("key_name") or "-", credentials_path()))
         out("可在 %s/account/api-keys 查看或删除这把密钥。" % (data.get("web_base") or creds["web_base"]).rstrip("/"))
         return EXIT_OK
@@ -315,17 +343,37 @@ def login_wait(args) -> int:
 def cmd_login(args) -> int:
     if args.wait and not args.start:
         return login_wait(args)
+    if not args.start and load_credentials()["api_key"] and not getattr(args, "force", False):
+        out("已授权，无需重新登录（如需更换账号先运行 logout --revoke）。")
+        return EXIT_OK
     code = login_start(args)
     if code != EXIT_OK or args.start:
         return code
     return login_wait(args)
 
 
-def cmd_logout(_args) -> int:
+def cmd_logout(args) -> int:
     path = credentials_path()
+    pending_login_path().unlink(missing_ok=True)
+    if getattr(args, "revoke", False) and path.exists():
+        stored = read_json(path, {}) or {}
+        if stored.get("api_key"):
+            creds = load_credentials()
+            creds["api_key"] = stored["api_key"]
+            try:
+                result = request("POST", "/api/agent-auth/revoke", {}, creds=creds, timeout=15)
+                out("服务端已作废这把密钥。" if result.get("revoked") else "这把密钥在服务端已不存在。")
+            except ApiError as err:
+                if err.status in (401, 403):
+                    out("这把密钥在服务端已失效。")
+                else:
+                    out("没能通知服务端作废密钥（%s），请到网页 /account/api-keys 手动删除。" % err.message)
     if path.exists():
         path.unlink()
-        out("已删除本机保存的凭据。密钥本身仍有效，如需作废请到网页 /account/api-keys 删除。")
+        if getattr(args, "revoke", False):
+            out("已删除本机保存的凭据。")
+        else:
+            out("已删除本机保存的凭据。密钥本身仍有效，如需作废请到网页 /account/api-keys 删除，或改用 logout --revoke。")
     else:
         out("本机没有保存的凭据。")
     if os.environ.get("BEILIAI_API_KEY"):
@@ -337,7 +385,11 @@ def fetch_balance(creds):
     return request("GET", "/api/oneapi/account/balance", creds=creds)
 
 
-def cmd_status(_args) -> int:
+def cmd_status(args) -> int:
+    if getattr(args, "check", False):
+        authed = bool(load_credentials()["api_key"]) or complete_pending_login_once(timeout=5)
+        out("authenticated: %s" % ("yes" if authed else "no"))
+        return EXIT_OK if authed else EXIT_AUTH
     creds = load_credentials()
     out("技能版本：v%s" % VERSION)
     out("接口地址：%s" % creds["api_base"])
@@ -752,6 +804,11 @@ def version_tuple(value) -> tuple:
 
 def install_channel() -> str:
     """web：从贝礼官网安装（可自助升级）；workbuddy 等：由平台安装，升级走平台。"""
+    env_channel = os.environ.get("BEILIAI_DISTRIBUTION", "").strip().lower()
+    if env_channel:
+        return env_channel
+    if DISTRIBUTION != "skill":
+        return DISTRIBUTION
     info = read_json(SKILL_DIR / "distribution.json", {}) or {}
     if info.get("channel"):
         return str(info["channel"])
@@ -912,8 +969,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-browser", action="store_true", help="不自动打开浏览器")
     p.set_defaults(func=cmd_login)
 
-    sub.add_parser("logout", help="删除本机保存的凭据").set_defaults(func=cmd_logout)
-    sub.add_parser("status", help="查看授权状态与余额").set_defaults(func=cmd_status)
+    p = sub.add_parser("logout", help="删除本机保存的凭据")
+    p.add_argument("--revoke", action="store_true", help="同时让服务端作废这把密钥")
+    p.set_defaults(func=cmd_logout)
+    p = sub.add_parser("status", help="查看授权状态与余额")
+    p.add_argument("--check", action="store_true", help="只检查本机是否已授权（不查余额），已授权返回 0")
+    p.set_defaults(func=cmd_status)
     sub.add_parser("ping", help="检查与服务的连通性（无需授权）").set_defaults(func=cmd_ping)
 
     p = sub.add_parser("balance", help="查询积分余额")
@@ -974,7 +1035,7 @@ def main(argv=None) -> int:
     except KeyboardInterrupt:
         out("已中断。")
         return EXIT_USAGE
-    if args.func not in (cmd_update, cmd_logout):
+    if args.func not in (cmd_update, cmd_logout) and not getattr(args, "check", False):
         try:
             print_update_notice()
         except Exception:  # noqa: BLE001 - 提醒失败不影响命令结果

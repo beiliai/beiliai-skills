@@ -1,20 +1,27 @@
 {
   "name": "beiliai-skills",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "base_url": "https://www.beiliai.com/agent/skill/beiliai-skills/",
   "files": [
     {
       "path": "SKILL.md",
-      "sha256": "397d286ac27d1f9c2d720537deb8efe9a5fdfe29f6204f02254ef4d6b902c90d",
-      "bytes": 7024
+      "sha256": "f35e7f6467b68ab3aaf97a27046067a888817f26d47181b6d8c35ff961a9e69b",
+      "bytes": 7166
     },
     {
       "path": "scripts/beiliai.py",
-      "sha256": "3acca42e2708a7a7cfb1c6667224c7eb188da068a6935b4881a357124eb399c8",
-      "bytes": 43902
+      "sha256": "7a2b2fddb3065ed839eda91063f1b36775c4812d701cb8cd33ca67cc833d0a9a",
+      "bytes": 47103
     }
   ],
   "changelog": [
+    {
+      "version": "1.5.0",
+      "date": "2026-11-23",
+      "notes": [
+        "支持 WorkBuddy 连接器：pip 安装包、status --check、logout --revoke（断开连接时作废服务端密钥）"
+      ]
+    },
     {
       "version": "1.4.1",
       "date": "2026-11-23",

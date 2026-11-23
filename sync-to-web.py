@@ -57,6 +57,13 @@ def main() -> None:
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(HERE / rel, dest)
     (legacy / "manifest.json").write_bytes((json.dumps(legacy_manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+    # WorkBuddy 连接器用的 pip 安装包（先运行 tools/build_workbuddy.py）。
+    wheels = sorted((HERE / "dist").glob("beiliai_skills-%s-*.whl" % version))
+    if not wheels:
+        sys.exit("缺少 dist/beiliai_skills-%s-*.whl，请先运行 python -I tools/build_workbuddy.py" % version)
+    (public / "dist").mkdir(exist_ok=True)
+    for wheel in wheels:
+        shutil.copyfile(wheel, public / "dist" / wheel.name)
     for rel in DOC_FILES:
         to_lf(HERE / "docs" / rel)
         shutil.copyfile(HERE / "docs" / rel, public / rel)

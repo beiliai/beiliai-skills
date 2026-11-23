@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 *.update-tmp
 .DS_Store
+dist/
