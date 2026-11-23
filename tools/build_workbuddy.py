@@ -143,6 +143,28 @@ def build_connector(ver: str, wheel: Path) -> Path:
     return path
 
 
+def build_expert() -> Path:
+    """打包 WorkBuddy 专家（workbuddy-expert/ → dist/beiliai-lapian-expert-<版本>.zip，单一顶层目录）。"""
+    src = HERE / "workbuddy-expert"
+    meta = json.loads((src / ".codebuddy-plugin" / "plugin.json").read_text(encoding="utf-8"))
+    desc_zh = meta["displayDescription"]["zh"]
+    assert 40 <= len(desc_zh) <= 50, "displayDescription.zh 须 40-50 字，当前 %d" % len(desc_zh)
+    assert len(meta["tags"]) == 3 and len(meta["quickPrompts"]) == 3
+    assert meta["defaultInitPrompt"]["zh"] == meta["quickPrompts"][0]["zh"]
+    assert meta["plugin"] == meta["name"] and "@" in meta["author"]["email"]
+    top = meta["name"]
+    entries = []
+    for path in sorted(src.rglob("*")):
+        if path.is_file():
+            data = path.read_bytes()
+            if path.suffix in (".md", ".json"):
+                data = data.replace(b"\r\n", b"\n")
+            entries.append((top + "/" + path.relative_to(src).as_posix(), data))
+    out = DIST / ("%s-expert-%s.zip" % (top, meta["version"]))
+    out.write_bytes(zip_bytes(entries))
+    return out
+
+
 def main() -> None:
     ver = version()
     (DIST / "workbuddy").mkdir(parents=True, exist_ok=True)
@@ -154,6 +176,7 @@ def main() -> None:
     connector = build_connector(ver, wheel)
     print(wheel.name, hashlib.sha256(wheel.read_bytes()).hexdigest())
     print(connector.name)
+    print(build_expert().name)
 
 
 if __name__ == "__main__":

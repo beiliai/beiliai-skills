@@ -1,0 +1,49 @@
+{
+  "name": "beiliai-lapian",
+  "version": "1.0.0",
+  "description": "Short-video breakdown analyst: shot-by-shot analysis of viral videos (structure, shots, camera moves, timed script, BGM) with reusable rewrite advice",
+  "author": {
+    "name": "Beiliai AI",
+    "email": "postmaster@beiliai.com"
+  },
+  "homepage": "https://www.beiliai.com",
+  "license": "MIT",
+  "keywords": ["video breakdown", "short video", "viral analysis", "storyboard", "拉片"],
+  "agents": ["./agents/beiliai-lapian.md"],
+
+  "expertType": "agent",
+  "agentName": "beiliai-lapian",
+
+  "displayName": {
+    "en": "Bei",
+    "zh": "小贝"
+  },
+  "profession": {
+    "en": "Short-Video Breakdown Analyst",
+    "zh": "短视频拉片分析师"
+  },
+  "displayDescription": {
+    "en": "Send a Douyin, Kuaishou, Bilibili or Xiaohongshu link and Bei breaks the video down shot by shot: viral structure, shots, camera moves, timed script and BGM, plus reusable rewrite ideas.",
+    "zh": "发一个抖音、快手、B站或小红书视频链接，小贝帮你逐镜头拉片：拆出爆款结构、分镜、运镜、文案和BGM"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "06-ContentCreative",
+  "defaultInitPrompt": {
+    "zh": "帮我拉片一条爆款视频",
+    "en": "Break down a viral video for me"
+  },
+  "plugin": "beiliai-lapian",
+  "tags": [
+    { "en": "Video Breakdown", "zh": "视频拉片" },
+    { "en": "Viral Analysis", "zh": "爆款分析" },
+    { "en": "Storyboard", "zh": "分镜运镜" }
+  ],
+  "quickPrompts": [
+    { "en": "Break down a viral video for me", "zh": "帮我拉片一条爆款视频" },
+    { "en": "Analyze this video's shots and camera moves", "zh": "拆解这条视频的分镜和运镜" },
+    { "en": "Extract the script with a timestamp per sentence", "zh": "提取视频文案并标出每句时间" }
+  ],
+  "dependencies": {
+    "connectors": ["beiliai"]
+  }
+}
