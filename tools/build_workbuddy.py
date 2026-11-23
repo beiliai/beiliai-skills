@@ -2,7 +2,7 @@
 
 用法：python -I tools/build_workbuddy.py
 - dist/beiliai_skills-<版本>-py3-none-any.whl：WorkBuddy 托管的 Python 里用 pip 安装（包含 python -m beiliai_skills 命令）；
-  发布到 https://www.beiliai.com/agent/dist/ 下（sync-to-web.py 会一起复制）。
+  发布到 https://www.beiliai.com/agent/pkg/ 下（sync-to-web.py 会一起复制）。
 - dist/beiliai-workbuddy-connector-<版本>.zip：上传到 WorkBuddy 开放平台的连接器包
   （connector-meta.json、cli.json、icon.png、skills/beiliai-skills/SKILL.md，单一顶层目录）。
 只用 Python 标准库。
@@ -17,7 +17,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
 DIST = HERE / "dist"
-WHEEL_BASE_URL = "https://www.beiliai.com/agent/dist/"
+WHEEL_BASE_URL = "https://www.beiliai.com/agent/pkg/"
 PLATFORMS = ("darwin", "linux", "win32")
 
 
