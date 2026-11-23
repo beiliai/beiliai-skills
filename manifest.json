@@ -1,20 +1,27 @@
 {
   "name": "beiliai-skills",
-  "version": "1.5.0",
-  "base_url": "https://www.beiliai.com/agent/skill/beiliai-skills/",
+  "version": "1.6.0",
+  "base_url": "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/1.6.0/",
   "files": [
     {
       "path": "SKILL.md",
-      "sha256": "f35e7f6467b68ab3aaf97a27046067a888817f26d47181b6d8c35ff961a9e69b",
+      "sha256": "7e7c613b00d6d43fba19a78981cc5d08e9448383297ee059378f24d02497ac67",
       "bytes": 7166
     },
     {
       "path": "scripts/beiliai.py",
-      "sha256": "7a2b2fddb3065ed839eda91063f1b36775c4812d701cb8cd33ca67cc833d0a9a",
-      "bytes": 47103
+      "sha256": "e44b7d915d6811c104988d499cc06ce076ce6f3e96fd79928f24bc9ec12e5e02",
+      "bytes": 47378
     }
   ],
   "changelog": [
+    {
+      "version": "1.6.0",
+      "date": "2026-11-23",
+      "notes": [
+        "技能与安装包改由阿里云 OSS 发布，升级从固定版本目录下载并核对校验值"
+      ]
+    },
     {
       "version": "1.5.0",
       "date": "2026-11-23",

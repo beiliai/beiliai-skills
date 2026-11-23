@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""贝礼 AI 命令行（技能 beiliai-skills v1.5.0：AI 拉片与视频拆解）。
+"""贝礼 AI 命令行（技能 beiliai-skills v1.6.0：AI 拉片与视频拆解）。
 
 只依赖 Python 3.8+ 标准库，Windows / macOS / Linux 通用。
 密钥只保存在本机 ~/.beiliai/credentials.json（权限 600），任何输出都不会打印密钥。
@@ -21,7 +21,7 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-VERSION = "1.5.0"
+VERSION = "1.6.0"
 DISTRIBUTION = "skill"  # 打成 pip 包（WorkBuddy 连接器）时改为 "workbuddy"
 DEFAULT_API_BASE = "https://www.beiliai.com/beiliai-api"
 DEFAULT_WEB_BASE = "https://www.beiliai.com"
@@ -42,7 +42,9 @@ EXIT_OK, EXIT_USAGE, EXIT_AUTH, EXIT_POINTS, EXIT_API, EXIT_UNCERTAIN, EXIT_PEND
 
 SKILL_NAME = "beiliai-skills"
 SKILL_DIR = Path(__file__).resolve().parent.parent
-MANIFEST_URL = DEFAULT_WEB_BASE + "/agent/skill/" + SKILL_NAME + "/manifest.json"
+# 技能发布地址（阿里云 OSS），由 release.json 的 public_base 决定，发布脚本会自动改写这一行。
+DIST_BASE = "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill"
+MANIFEST_URL = DIST_BASE + "/" + SKILL_NAME + "/latest/manifest.json"
 UPDATE_CHECK_INTERVAL = 24 * 3600
 UPDATE_RETRY_AFTER_FAILURE = 6 * 3600
 
@@ -924,7 +926,8 @@ def cmd_update(args) -> int:
     if not args.yes:
         out("确认要升级时运行：update --yes")
         return EXIT_USAGE
-    base = DEFAULT_WEB_BASE + "/agent/skill/" + SKILL_NAME + "/"
+    # 从该版本的固定目录下载（版本目录发布后不再改动）。
+    base = DIST_BASE + "/" + SKILL_NAME + "/" + urllib.parse.quote(latest) + "/"
     staged = []
     try:
         for item in manifest.get("files") or []:

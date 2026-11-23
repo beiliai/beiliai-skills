@@ -35,7 +35,7 @@ a{color:inherit}
 <body>
 <main>
   <h1>安装贝礼 AI 技能</h1>
-  <p class="lead">在 Claude Code、Codex、WorkBuddy 等 Agent 中直接对话拆解视频：爆款分析、分镜、文案、BGM。当前版本 v1.5.0。</p>
+  <p class="lead">在 Claude Code、Codex、WorkBuddy 等 Agent 中直接对话拆解视频：爆款分析、分镜、文案、BGM。当前版本 v1.6.0。</p>
 
   <section class="card">
     <strong>一句话安装</strong>
@@ -66,13 +66,13 @@ a{color:inherit}
   </div>
   <pre><code># macOS / Linux（以 Claude Code 为例）
 D=~/.claude/skills/beiliai-skills
-B=https://www.beiliai.com/agent/skill/beiliai-skills
+B=https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/latest
 mkdir -p "$D/scripts"
 curl -fsSL "$B/SKILL.md" -o "$D/SKILL.md"
 curl -fsSL "$B/scripts/beiliai.py" -o "$D/scripts/beiliai.py"</code></pre>
   <pre><code># Windows PowerShell
 $D = "$env:USERPROFILE\.claude\skills\beiliai-skills"
-$B = "https://www.beiliai.com/agent/skill/beiliai-skills"
+$B = "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/latest"
 New-Item -ItemType Directory -Force "$D\scripts" | Out-Null
 Invoke-WebRequest "$B/SKILL.md" -OutFile "$D\SKILL.md"
 Invoke-WebRequest "$B/scripts/beiliai.py" -OutFile "$D\scripts\beiliai.py"</code></pre>
@@ -90,7 +90,7 @@ Invoke-WebRequest "$B/scripts/beiliai.py" -OutFile "$D\scripts\beiliai.py"</code
 
   <div class="links">
     <a href="/agent/api.html">API 文档 ↗</a>
-    <a href="/agent/skill/beiliai-skills/SKILL.md">查看 SKILL.md ↗</a> · <a href="https://github.com/beiliai/beiliai-skills" target="_blank" rel="noreferrer">GitHub 源码 ↗</a>
+    <a href="https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/latest/SKILL.md">查看 SKILL.md ↗</a> · <a href="https://github.com/beiliai/beiliai-skills" target="_blank" rel="noreferrer">GitHub 源码 ↗</a>
     <a href="/account/api-keys">管理 API 密钥 ↗</a>
   </div>
 </main>

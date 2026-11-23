@@ -65,3 +65,15 @@ Agent 会下载技能、核对文件校验值，并给你一个授权链接：�
 ## 许可
 
 [MIT](LICENSE)。本仓库只包含客户端技能；拆解服务由贝礼 AI 提供，使用服务需遵守 [贝礼 AI 用户协议](https://www.beiliai.com)。
+
+## 发布（维护者）
+
+技能文件与 WorkBuddy 安装包发布在阿里云 OSS，地址由 [release.json](release.json) 决定（当前为 `https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/`）：
+
+```bash
+# 改 scripts/beiliai.py 的 VERSION 与 changelog.json 后：
+python -I -X utf8 sync-to-web.py --publish            # 写入发布地址、生成清单、打 WorkBuddy 连接器、同步网站、上传 OSS
+python -I -X utf8 sync-to-web.py --publish --keep 5   # 同时只保留最近 5 个版本
+```
+
+OSS 访问密钥只在本机：`release.local.json`（不进 git）写明密钥文件位置。

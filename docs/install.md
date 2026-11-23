@@ -1,15 +1,15 @@
 # 安装贝礼 AI 技能（给 Agent 的说明）
 
-你是用户的 Agent。用户希望安装贝礼 AI 技能 `beiliai-skills`（v1.5.0，AI 拉片：深度分析、分镜、运镜、视频文案、BGM）。请按以下步骤完成，每一步都向用户简要说明正在做什么。不要修改与本技能无关的文件，不要重启用户的客户端。
+你是用户的 Agent。用户希望安装贝礼 AI 技能 `beiliai-skills`（v1.6.0，AI 拉片：深度分析、分镜、运镜、视频文案、BGM）。请按以下步骤完成，每一步都向用户简要说明正在做什么。不要修改与本技能无关的文件，不要重启用户的客户端。
 
 ## 1. 下载地址
 
-- 文件清单（含版本与 SHA-256）：https://www.beiliai.com/agent/skill/beiliai-skills/manifest.json
-- 技能文件（相对于 `https://www.beiliai.com/agent/skill/beiliai-skills/`）：
+- 文件清单（含版本与 SHA-256）：https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/latest/manifest.json
+- 技能文件（相对于 `https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/latest/`）：
   - `SKILL.md`
   - `scripts/beiliai.py`
 
-只从 `https://www.beiliai.com` 下载（同样的文件也在 GitHub 公开：https://github.com/beiliai/beiliai-skills ，用户要求从 GitHub 安装时可 `git clone` 该仓库到下文的安装目录，同样要核对 manifest.json 里的校验值）。下载后按 manifest.json 核对每个文件的 SHA-256，不一致就停止并告诉用户。
+只从贝礼官方发布地址 `https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/` 下载（同样的文件也在 GitHub 公开：https://github.com/beiliai/beiliai-skills ，用户要求从 GitHub 安装时可 `git clone` 该仓库到下文的安装目录，同样要核对 manifest.json 里的校验值）。下载后按 manifest.json 核对每个文件的 SHA-256，不一致就停止并告诉用户。
 
 ## 2. 选择安装目录
 
@@ -31,7 +31,7 @@
 ```bash
 # macOS / Linux
 D=~/.claude/skills/beiliai-skills   # 按上表替换
-B=https://www.beiliai.com/agent/skill/beiliai-skills
+B=https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/latest
 mkdir -p "$D/scripts"
 curl -fsSL "$B/SKILL.md" -o "$D/SKILL.md"
 curl -fsSL "$B/scripts/beiliai.py" -o "$D/scripts/beiliai.py"
@@ -40,7 +40,7 @@ curl -fsSL "$B/scripts/beiliai.py" -o "$D/scripts/beiliai.py"
 ```powershell
 # Windows PowerShell
 $D = "$env:USERPROFILE\.claude\skills\beiliai-skills"   # 按上表替换
-$B = "https://www.beiliai.com/agent/skill/beiliai-skills"
+$B = "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/latest"
 New-Item -ItemType Directory -Force "$D\scripts" | Out-Null
 Invoke-WebRequest "$B/SKILL.md" -OutFile "$D\SKILL.md"
 Invoke-WebRequest "$B/scripts/beiliai.py" -OutFile "$D\scripts\beiliai.py"
@@ -48,7 +48,7 @@ Invoke-WebRequest "$B/scripts/beiliai.py" -OutFile "$D\scripts\beiliai.py"
 
 ## 4. 检查运行环境
 
-运行 `python <安装目录>/scripts/beiliai.py --version`（Windows 上 `python` 不可用时用 `py -3`），应输出 `beiliai-skills 1.5.0`。需要 Python 3.8 或更高版本；没有 Python 时告诉用户先安装。
+运行 `python <安装目录>/scripts/beiliai.py --version`（Windows 上 `python` 不可用时用 `py -3`），应输出 `beiliai-skills 1.6.0`。需要 Python 3.8 或更高版本；没有 Python 时告诉用户先安装。
 
 再运行 `… beiliai.py ping` 确认能连上服务。
 

@@ -1,0 +1,8 @@
+{
+  "oss": {
+    "bucket": "skls",
+    "endpoint": "oss-cn-hangzhou.aliyuncs.com",
+    "prefix": "bl/skill"
+  },
+  "public_base": "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill"
+}

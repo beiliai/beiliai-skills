@@ -3,3 +3,4 @@ __pycache__/
 *.update-tmp
 .DS_Store
 dist/
+release.local.json
