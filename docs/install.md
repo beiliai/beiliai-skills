@@ -1,6 +1,6 @@
 # 安装贝礼 AI 技能（给 Agent 的说明）
 
-你是用户的 Agent。用户希望安装贝礼 AI 技能 `beiliai-skills`（v1.4.0，AI 拉片：深度分析、分镜、运镜、视频文案、BGM）。请按以下步骤完成，每一步都向用户简要说明正在做什么。不要修改与本技能无关的文件，不要重启用户的客户端。
+你是用户的 Agent。用户希望安装贝礼 AI 技能 `beiliai-skills`（v1.4.1，AI 拉片：深度分析、分镜、运镜、视频文案、BGM）。请按以下步骤完成，每一步都向用户简要说明正在做什么。不要修改与本技能无关的文件，不要重启用户的客户端。
 
 ## 1. 下载地址
 
@@ -48,7 +48,7 @@ Invoke-WebRequest "$B/scripts/beiliai.py" -OutFile "$D\scripts\beiliai.py"
 
 ## 4. 检查运行环境
 
-运行 `python <安装目录>/scripts/beiliai.py --version`（Windows 上 `python` 不可用时用 `py -3`），应输出 `beiliai-skills 1.4.0`。需要 Python 3.8 或更高版本；没有 Python 时告诉用户先安装。
+运行 `python <安装目录>/scripts/beiliai.py --version`（Windows 上 `python` 不可用时用 `py -3`），应输出 `beiliai-skills 1.4.1`。需要 Python 3.8 或更高版本；没有 Python 时告诉用户先安装。
 
 再运行 `… beiliai.py ping` 确认能连上服务。
 

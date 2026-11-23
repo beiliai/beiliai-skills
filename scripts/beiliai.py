@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""贝礼 AI 命令行（技能 beiliai-skills v1.4.0：AI 拉片与视频拆解）。
+"""贝礼 AI 命令行（技能 beiliai-skills v1.4.1：AI 拉片与视频拆解）。
 
 只依赖 Python 3.8+ 标准库，Windows / macOS / Linux 通用。
 密钥只保存在本机 ~/.beiliai/credentials.json（权限 600），任何输出都不会打印密钥。
@@ -21,7 +21,7 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 DEFAULT_API_BASE = "https://www.beiliai.com/beiliai-api"
 DEFAULT_WEB_BASE = "https://www.beiliai.com"
 DEFAULT_TYPES = ["hot", "transition", "asr"]
@@ -753,7 +753,11 @@ def version_tuple(value) -> tuple:
 def install_channel() -> str:
     """web：从贝礼官网安装（可自助升级）；workbuddy 等：由平台安装，升级走平台。"""
     info = read_json(SKILL_DIR / "distribution.json", {}) or {}
-    return str(info.get("channel") or "web")
+    if info.get("channel"):
+        return str(info["channel"])
+    if (SKILL_DIR / ".git").exists():
+        return "git"
+    return "web"
 
 
 def fetch_manifest(timeout: float = 3.0) -> dict:
@@ -817,6 +821,8 @@ def print_update_notice() -> None:
         out(line)
     if install_channel() == "web":
         out("请告诉用户有新版本，用户同意后运行：update --yes（会核对每个文件的校验值）。")
+    elif install_channel() == "git":
+        out("此技能是从 GitHub 克隆安装的：用户同意后在技能目录运行 git pull 升级。")
     else:
         out("此技能由 %s 安装，请提醒用户在 %s 里更新。" % (install_channel(), install_channel()))
 
@@ -852,6 +858,9 @@ def cmd_update(args) -> int:
         return EXIT_OK
     if args.check:
         return EXIT_OK
+    if install_channel() == "git":
+        out("此技能是从 GitHub 克隆安装的，请在技能目录运行 git pull 升级。")
+        return EXIT_USAGE
     if install_channel() != "web":
         out("此技能由 %s 安装，请在 %s 里更新。" % (install_channel(), install_channel()))
         return EXIT_USAGE

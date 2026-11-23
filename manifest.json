@@ -1,20 +1,27 @@
 {
   "name": "beiliai-skills",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "base_url": "https://www.beiliai.com/agent/skill/beiliai-skills/",
   "files": [
     {
       "path": "SKILL.md",
-      "sha256": "8e8e660559bfc17f93067eb919fe39957c7008f87df90bb7dd914a4728393007",
+      "sha256": "397d286ac27d1f9c2d720537deb8efe9a5fdfe29f6204f02254ef4d6b902c90d",
       "bytes": 7024
     },
     {
       "path": "scripts/beiliai.py",
-      "sha256": "86a0494126956fba47aaace3c88d08274734d820df397c4671fb5be270e775b2",
-      "bytes": 43497
+      "sha256": "3acca42e2708a7a7cfb1c6667224c7eb188da068a6935b4881a357124eb399c8",
+      "bytes": 43902
     }
   ],
   "changelog": [
+    {
+      "version": "1.4.1",
+      "date": "2026-11-23",
+      "notes": [
+        "从 GitHub 克隆安装时，升级提示改为在技能目录运行 git pull"
+      ]
+    },
     {
       "version": "1.4.0",
       "date": "2026-11-23",
