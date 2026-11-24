@@ -79,7 +79,9 @@ def workbuddy_skill_md(ver: str) -> bytes:
         "2. 未授权（返回码 3）时，请用户在 WorkBuddy 的连接器列表里找到“贝礼 AI”，点“连接”：会打开贝礼 AI 的授权页，"
         "没有账号用手机号验证码登录即自动注册（新用户赠送体验积分），核对授权码后点“授权”。\n"
         "3. 用户无法使用连接按钮时，也可以运行 `beiliai login --start`，把输出的链接和授权码发给用户，用户授权后运行 `beiliai login --wait`。\n"
-        "4. 授权会在用户账号下生成一把 API 密钥，可在 https://www.beiliai.com/account/api-keys 查看或删除；在 WorkBuddy 里断开连接也会作废这把密钥。\n\n"
+        "4. 授权会在用户账号下生成一把 API 密钥，可在 https://www.beiliai.com/account/api-keys 查看或删除；在 WorkBuddy 里断开连接也会作废这把密钥。\n"
+        "5. 用户已有 API 密钥（sk- 开头，在 https://www.beiliai.com/account/api-keys 创建）时，可运行 `beiliai login --api-key -` 并从标准输入传入密钥直接登录，"
+        "不要把密钥写进命令行参数或回显给用户。\n\n"
     ) + text[end:]
     return text.encode("utf-8")
 
@@ -153,7 +155,10 @@ def build_expert() -> Path:
     assert meta["defaultInitPrompt"]["zh"] == meta["quickPrompts"][0]["zh"]
     assert meta["plugin"] == meta["name"] and "@" in meta["author"]["email"]
     top = meta["name"]
-    entries = []
+    # 专家的 agent 声明了预加载技能 beiliai-skills（agents/*.md 的 skills 字段），技能说明必须随专家包一起提交，
+    # 否则审核报“资产包缺少必需资源：技能 beiliai-skills”。内容与连接器里的 WorkBuddy 版技能说明一致。
+    assert meta.get("skills") == ["./skills/beiliai-skills"], 'plugin.json 须声明 "skills": ["./skills/beiliai-skills"]'
+    entries = [(top + "/skills/beiliai-skills/SKILL.md", workbuddy_skill_md(version()))]
     for path in sorted(src.rglob("*")):
         if path.is_file():
             data = path.read_bytes()

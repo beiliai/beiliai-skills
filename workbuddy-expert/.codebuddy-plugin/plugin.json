@@ -1,6 +1,6 @@
 {
   "name": "beiliai-lapian",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Short-video breakdown analyst: shot-by-shot analysis of viral videos (structure, shots, camera moves, timed script, BGM) with reusable rewrite advice",
   "author": {
     "name": "Beiliai AI",
@@ -10,6 +10,7 @@
   "license": "MIT",
   "keywords": ["video breakdown", "short video", "viral analysis", "storyboard", "拉片"],
   "agents": ["./agents/beiliai-lapian.md"],
+  "skills": ["./skills/beiliai-skills"],
 
   "expertType": "agent",
   "agentName": "beiliai-lapian",

@@ -1,20 +1,28 @@
 {
   "name": "beiliai-skills",
-  "version": "1.6.0",
-  "base_url": "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/1.6.0/",
+  "version": "1.6.1",
+  "base_url": "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/1.6.1/",
   "files": [
     {
       "path": "SKILL.md",
-      "sha256": "7e7c613b00d6d43fba19a78981cc5d08e9448383297ee059378f24d02497ac67",
-      "bytes": 7166
+      "sha256": "a7f5596e555bbec8231c578348be0d6c72244368a8e48645c83c670d169d8f80",
+      "bytes": 7487
     },
     {
       "path": "scripts/beiliai.py",
-      "sha256": "e44b7d915d6811c104988d499cc06ce076ce6f3e96fd79928f24bc9ec12e5e02",
-      "bytes": 47378
+      "sha256": "df5d474ef40733bf09cdeda10f40bb620bd38c43ae5107fb02d2d2a805d213ca",
+      "bytes": 48784
     }
   ],
   "changelog": [
+    {
+      "version": "1.6.1",
+      "date": "2026-11-25",
+      "notes": [
+        "新增 login --api-key：直接用已有的 API 密钥登录（可从标准输入读取，不显示密钥）",
+        "WorkBuddy 专家包内置技能说明"
+      ]
+    },
     {
       "version": "1.6.0",
       "date": "2026-11-23",

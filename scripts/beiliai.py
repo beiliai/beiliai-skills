@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""贝礼 AI 命令行（技能 beiliai-skills v1.6.0：AI 拉片与视频拆解）。
+"""贝礼 AI 命令行（技能 beiliai-skills v1.6.1：AI 拉片与视频拆解）。
 
 只依赖 Python 3.8+ 标准库，Windows / macOS / Linux 通用。
 密钥只保存在本机 ~/.beiliai/credentials.json（权限 600），任何输出都不会打印密钥。
@@ -21,7 +21,7 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-VERSION = "1.6.0"
+VERSION = "1.6.1"
 DISTRIBUTION = "skill"  # 打成 pip 包（WorkBuddy 连接器）时改为 "workbuddy"
 DEFAULT_API_BASE = "https://www.beiliai.com/beiliai-api"
 DEFAULT_WEB_BASE = "https://www.beiliai.com"
@@ -342,7 +342,32 @@ def login_wait(args) -> int:
     return EXIT_PENDING
 
 
+def login_with_api_key(args) -> int:
+    """用已有的 API 密钥登录（网页 /account/api-keys 创建的密钥，或平台评测用的临时密钥）：先校验再保存，不显示密钥。"""
+    key = str(args.api_key or "").strip()
+    if key == "-":
+        key = sys.stdin.readline().strip()
+    if not key.startswith("sk-") or len(key) < 16:
+        out("API 密钥格式不对：应以 sk- 开头，可在 %s/account/api-keys 创建。" % load_credentials()["web_base"])
+        return EXIT_USAGE
+    creds = load_credentials()
+    creds["api_key"] = key
+    try:
+        balance = fetch_balance(creds)
+    except ApiError as err:
+        if err.status in (401, 403):
+            out("这把 API 密钥无效或已被删除，请到 %s/account/api-keys 重新创建。" % creds["web_base"])
+            return EXIT_AUTH
+        return report_api_error(err, creds)
+    save_login_result({"api_key": key, "key_name": "API 密钥"}, creds)
+    out("已用 API 密钥登录。凭据已保存到 %s（仅本机可读，内容不会显示）。" % credentials_path())
+    out("积分余额：%s" % fmt_int(balance.get("points")))
+    return EXIT_OK
+
+
 def cmd_login(args) -> int:
+    if getattr(args, "api_key", None):
+        return login_with_api_key(args)
     if args.wait and not args.start:
         return login_wait(args)
     if not args.start and load_credentials()["api_key"] and not getattr(args, "force", False):
@@ -970,6 +995,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--timeout", type=int, default=110, help="本次最多等待秒数（默认 110）")
     p.add_argument("--client", choices=sorted(CLIENT_LABELS), help="客户端类型（默认自动识别）")
     p.add_argument("--no-browser", action="store_true", help="不自动打开浏览器")
+    p.add_argument("--api-key", metavar="KEY", help="直接用已有的 API 密钥登录（sk- 开头；传 - 则从标准输入读取，避免留在命令历史）")
     p.set_defaults(func=cmd_login)
 
     p = sub.add_parser("logout", help="删除本机保存的凭据")
