@@ -1,20 +1,27 @@
 {
   "name": "beiliai-skills",
-  "version": "1.6.1",
-  "base_url": "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/1.6.1/",
+  "version": "1.6.2",
+  "base_url": "https://skls.oss-cn-hangzhou.aliyuncs.com/bl/skill/beiliai-skills/1.6.2/",
   "files": [
     {
       "path": "SKILL.md",
-      "sha256": "a7f5596e555bbec8231c578348be0d6c72244368a8e48645c83c670d169d8f80",
+      "sha256": "7b9ea27d8d129cbe01ac9f3623646905467ebe721359da768f387100430cc2af",
       "bytes": 7487
     },
     {
       "path": "scripts/beiliai.py",
-      "sha256": "df5d474ef40733bf09cdeda10f40bb620bd38c43ae5107fb02d2d2a805d213ca",
-      "bytes": 48784
+      "sha256": "12419b342d584f7cc373f8f4aa479f878d282332e3681370240fd62a016f04e9",
+      "bytes": 48772
     }
   ],
   "changelog": [
+    {
+      "version": "1.6.2",
+      "date": "2026-11-25",
+      "notes": [
+        "默认接口地址改为网站根目录 https://www.beiliai.com（/api/）；已保存的 /beiliai-api 地址继续可用"
+      ]
+    },
     {
       "version": "1.6.1",
       "date": "2026-11-25",

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""贝礼 AI 命令行（技能 beiliai-skills v1.6.1：AI 拉片与视频拆解）。
+"""贝礼 AI 命令行（技能 beiliai-skills v1.6.2：AI 拉片与视频拆解）。
 
 只依赖 Python 3.8+ 标准库，Windows / macOS / Linux 通用。
 密钥只保存在本机 ~/.beiliai/credentials.json（权限 600），任何输出都不会打印密钥。
@@ -21,9 +21,9 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-VERSION = "1.6.1"
+VERSION = "1.6.2"
 DISTRIBUTION = "skill"  # 打成 pip 包（WorkBuddy 连接器）时改为 "workbuddy"
-DEFAULT_API_BASE = "https://www.beiliai.com/beiliai-api"
+DEFAULT_API_BASE = "https://www.beiliai.com"
 DEFAULT_WEB_BASE = "https://www.beiliai.com"
 DEFAULT_TYPES = ["hot", "transition", "asr"]
 ALL_TYPES = {"hot": "爆款分析", "transition": "分镜拆解", "asr": "视频文案", "bgm": "BGM 拆解"}

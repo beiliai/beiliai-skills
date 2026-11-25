@@ -50,7 +50,7 @@ a{color:inherit}
 </nav>
 <main>
   <h1>贝礼 AI 开放接口</h1>
-  <p class="lead">用 API 密钥把视频拆解接入你的 Agent 或应用。接口地址：<code>https://www.beiliai.com/beiliai-api</code>，请求和响应均为 JSON（UTF-8）。</p>
+  <p class="lead">用 API 密钥把视频拆解接入你的 Agent 或应用。接口地址：<code>https://www.beiliai.com</code>，请求和响应均为 JSON（UTF-8）。</p>
   <div class="note">所有响应都形如 <code>{"success": true, "data": …}</code>；失败时 <code>success</code> 为 <code>false</code>，带 <code>message</code>，部分错误带 <code>code</code>。拆解按次计费，流程固定为：<b>解析链接 → 报价 → 用户确认 → 创建任务 → 轮询结果</b>。</div>
 
   <h2 id="auth">鉴权</h2>
@@ -71,7 +71,7 @@ a{color:inherit}
     <li>Agent 按 <code>interval</code> 秒轮询“领取密钥”，成功后得到 <code>api_key</code>（只返回一次）。</li>
   </ol>
   <h3><span class="ep">POST</span><code>/api/agent-auth/device</code>（无需鉴权）</h3>
-  <pre><code>curl -X POST https://www.beiliai.com/beiliai-api/api/agent-auth/device \
+  <pre><code>curl -X POST https://www.beiliai.com/api/agent-auth/device \
   -H 'Content-Type: application/json' \
   -d '{"client":"claude-code","client_name":"Claude Code（我的电脑）"}'</code></pre>
   <p><code>client</code> 可选 <code>claude-code</code>、<code>codex</code>、<code>workbuddy</code>、<code>openclaw</code>、<code>other</code>。</p>
@@ -83,11 +83,11 @@ a{color:inherit}
   "expires_in":600,
   "interval":3}}</code></pre>
   <h3><span class="ep">POST</span><code>/api/agent-auth/token</code>（无需鉴权）</h3>
-  <pre><code>curl -X POST https://www.beiliai.com/beiliai-api/api/agent-auth/token \
+  <pre><code>curl -X POST https://www.beiliai.com/api/agent-auth/token \
   -H 'Content-Type: application/json' -d '{"device_code":"…"}'</code></pre>
   <p>成功（只返回一次，请立即安全保存）：</p>
   <pre><code>{"success":true,"data":{"api_key":"sk-…","key_name":"Claude Code 授权 2026-11-23",
-  "api_base":"https://www.beiliai.com/beiliai-api","web_base":"https://www.beiliai.com"}}</code></pre>
+  "api_base":"https://www.beiliai.com","web_base":"https://www.beiliai.com"}}</code></pre>
   <p>未完成时返回 HTTP 400，<code>code</code> 为：</p>
   <div class="table-wrap"><table>
     <tr><th>code</th><th>含义</th><th>处理</th></tr>
@@ -100,7 +100,7 @@ a{color:inherit}
 
   <h2 id="balance">余额</h2>
   <h3><span class="ep">GET</span><code>/api/oneapi/account/balance</code></h3>
-  <pre><code>curl https://www.beiliai.com/beiliai-api/api/oneapi/account/balance -H "Authorization: Bearer $BEILIAI_API_KEY"</code></pre>
+  <pre><code>curl https://www.beiliai.com/api/oneapi/account/balance -H "Authorization: Bearer $BEILIAI_API_KEY"</code></pre>
   <pre><code>{"success":true,"data":{"points":1234,"reserved_points":0,
   "recharge_url":"https://www.beiliai.com/account/billing?recharge=1"}}</code></pre>
   <p>1 元 = 100 积分。积分包与价格可从公开接口 <code>GET /api/payment/packages</code> 读取。</p>
@@ -108,7 +108,7 @@ a{color:inherit}
   <h2 id="resolve">解析链接</h2>
   <h3><span class="ep">POST</span><code>/api/oneapi/video-breakdown/resolve</code></h3>
   <p>支持抖音、快手、B 站、视频号等公开视频链接或分享链接。</p>
-  <pre><code>curl -X POST https://www.beiliai.com/beiliai-api/api/oneapi/video-breakdown/resolve \
+  <pre><code>curl -X POST https://www.beiliai.com/api/oneapi/video-breakdown/resolve \
   -H "Authorization: Bearer $BEILIAI_API_KEY" -H 'Content-Type: application/json' \
   -d '{"url":"https://v.douyin.com/xxxx/"}'</code></pre>
   <pre><code>{"success":true,"data":{"sourceToken":"…","title":"…","platform":"douyin",
@@ -118,7 +118,7 @@ a{color:inherit}
 
   <h2 id="quote">报价（不扣费）</h2>
   <h3><span class="ep">POST</span><code>/api/oneapi/video-breakdown/quotes</code></h3>
-  <pre><code>curl -X POST https://www.beiliai.com/beiliai-api/api/oneapi/video-breakdown/quotes \
+  <pre><code>curl -X POST https://www.beiliai.com/api/oneapi/video-breakdown/quotes \
   -H "Authorization: Bearer $BEILIAI_API_KEY" -H 'Content-Type: application/json' \
   -d '{"sourceToken":"…","breakdownTypes":["hot","transition","asr"],"qualityProfile":"balanced"}'</code></pre>
   <div class="table-wrap"><table>
@@ -168,7 +168,7 @@ a{color:inherit}
 
   <h2 id="get">查询任务</h2>
   <h3><span class="ep">GET</span><code>/api/oneapi/video-breakdown/jobs/{id}</code></h3>
-  <pre><code>curl https://www.beiliai.com/beiliai-api/api/oneapi/video-breakdown/jobs/web_video_breakdown_xxx \
+  <pre><code>curl https://www.beiliai.com/api/oneapi/video-breakdown/jobs/web_video_breakdown_xxx \
   -H "Authorization: Bearer $BEILIAI_API_KEY"</code></pre>
   <p>建议每 5 秒轮询一次。主要字段：</p>
   <div class="table-wrap"><table>
