@@ -1,7 +1,8 @@
 """阿里云 OSS 最小客户端（只用标准库，V1 签名）：上传、下载、列举、删除。
 
-配置来自仓库根目录的 release.json（bucket、endpoint、prefix）；访问密钥从 release.local.json（不进 git）
-的 oss_credentials_glob 或环境变量 BEILIAI_OSS_CREDENTIALS 指向的 CSV 读取（或环境变量 BEILIAI_OSS_ACCESS_KEY_ID / BEILIAI_OSS_ACCESS_KEY_SECRET），任何输出都不包含密钥。
+配置来自仓库根目录的 release.json（bucket、endpoint、prefix）；访问密钥写在 release.local.json（本机私有配置，不进 git）的
+oss_access_key_id / oss_access_key_secret，或环境变量 BEILIAI_OSS_ACCESS_KEY_ID / BEILIAI_OSS_ACCESS_KEY_SECRET（优先）。
+不读取 CSV 文件；任何输出都不包含密钥。
 所有对象名都由调用方给出相对路径，这里统一加上 prefix——路径前缀由代码配置控制，不写死在 OSS 权限里。
 
 用法：
@@ -11,8 +12,6 @@
   python -I tools/oss.py rmtree <相对前缀>      # 删除前缀下所有对象
 """
 import base64
-import csv
-import glob
 import hashlib
 import hmac
 import json
@@ -39,30 +38,20 @@ class OSS:
         self.endpoint = oss["endpoint"]
         self.prefix = oss["prefix"].strip("/")
         self.public_base = config["public_base"].rstrip("/")
-        local = ROOT / "release.local.json"  # 本机私有配置（不进 git）：OSS 访问密钥文件的位置
-        pattern = os.environ.get("BEILIAI_OSS_CREDENTIALS", "").strip()
-        if not pattern and local.exists():
-            pattern = json.loads(local.read_text(encoding="utf-8")).get("oss_credentials_glob", "")
-        self.key_id, self.key_secret = self._credentials(pattern)
+        self.key_id, self.key_secret = self._credentials()
 
     @staticmethod
-    def _credentials(pattern: str):
+    def _credentials():
         key_id = os.environ.get("BEILIAI_OSS_ACCESS_KEY_ID", "").strip()
         secret = os.environ.get("BEILIAI_OSS_ACCESS_KEY_SECRET", "").strip()
         if key_id and secret:
             return key_id, secret
-        files = sorted(glob.glob(pattern)) if pattern else []
-        if not files:
-            sys.exit("找不到 OSS 访问密钥文件（release.local.json 的 oss_credentials_glob 或 BEILIAI_OSS_CREDENTIALS），也没有设置环境变量。")
-        with open(files[-1], encoding="utf-8-sig", newline="") as handle:
-            rows = list(csv.DictReader(handle))
-        if not rows:
-            sys.exit("OSS 访问密钥文件是空的。")
-        row = {k.strip(): (v or "").strip() for k, v in rows[0].items() if k}
-        key_id = next((v for k, v in row.items() if k.lower().replace(" ", "") in ("accesskeyid",)), "")
-        secret = next((v for k, v in row.items() if k.lower().replace(" ", "") in ("accesskeysecret",)), "")
+        local = ROOT / "release.local.json"  # 本机私有发布配置（不进 git）
+        conf = json.loads(local.read_text(encoding="utf-8")) if local.exists() else {}
+        key_id = str(conf.get("oss_access_key_id", "")).strip()
+        secret = str(conf.get("oss_access_key_secret", "")).strip()
         if not key_id or not secret:
-            sys.exit("OSS 访问密钥文件里没有 AccessKey ID / AccessKey Secret 列。")
+            sys.exit("没有 OSS 访问密钥：请在 release.local.json 填写 oss_access_key_id / oss_access_key_secret，或设置环境变量。")
         return key_id, secret
 
     def key(self, rel: str) -> str:
