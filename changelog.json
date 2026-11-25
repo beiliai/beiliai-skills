@@ -3,7 +3,7 @@
     "version": "1.6.2",
     "date": "2026-11-25",
     "notes": [
-      "默认接口地址改为网站根目录 https://www.beiliai.com（/api/）；已保存的 /beiliai-api 地址继续可用"
+      "默认接口地址改为网站根目录 https://www.beiliai.com（/api/）；以前登录时保存的 /beiliai-api 地址会自动换成新地址"
     ]
   },
   {

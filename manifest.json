@@ -10,8 +10,8 @@
     },
     {
       "path": "scripts/beiliai.py",
-      "sha256": "12419b342d584f7cc373f8f4aa479f878d282332e3681370240fd62a016f04e9",
-      "bytes": 48772
+      "sha256": "80e87d7ca1725debb548d0dfb0a980c9af115adcede7f7ff3417edeb08c12e7e",
+      "bytes": 49004
     }
   ],
   "changelog": [
@@ -19,7 +19,7 @@
       "version": "1.6.2",
       "date": "2026-11-25",
       "notes": [
-        "默认接口地址改为网站根目录 https://www.beiliai.com（/api/）；已保存的 /beiliai-api 地址继续可用"
+        "默认接口地址改为网站根目录 https://www.beiliai.com（/api/）；以前登录时保存的 /beiliai-api 地址会自动换成新地址"
       ]
     },
     {

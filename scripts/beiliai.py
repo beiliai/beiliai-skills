@@ -24,6 +24,7 @@ from pathlib import Path
 VERSION = "1.6.2"
 DISTRIBUTION = "skill"  # 打成 pip 包（WorkBuddy 连接器）时改为 "workbuddy"
 DEFAULT_API_BASE = "https://www.beiliai.com"
+LEGACY_API_BASE = "https://www.beiliai.com/beiliai-api"
 DEFAULT_WEB_BASE = "https://www.beiliai.com"
 DEFAULT_TYPES = ["hot", "transition", "asr"]
 ALL_TYPES = {"hot": "爆款分析", "transition": "分镜拆解", "asr": "视频文案", "bgm": "BGM 拆解"}
@@ -107,6 +108,8 @@ def load_credentials() -> dict:
     env_key = os.environ.get("BEILIAI_API_KEY", "").strip()
     stored = read_json(credentials_path(), {}) or {}
     api_base = (os.environ.get("BEILIAI_API_BASE", "").strip() or stored.get("api_base") or DEFAULT_API_BASE).rstrip("/")
+    if api_base == LEGACY_API_BASE:  # v1.6.1 及以前登录时保存的旧前缀，服务端仍兼容，这里统一换成网站根目录
+        api_base = DEFAULT_API_BASE
     web_base = (os.environ.get("BEILIAI_WEB_BASE", "").strip() or stored.get("web_base") or DEFAULT_WEB_BASE).rstrip("/")
     if env_key:
         return {"api_key": env_key, "api_base": api_base, "web_base": web_base, "source": "环境变量 BEILIAI_API_KEY", "key_name": ""}
