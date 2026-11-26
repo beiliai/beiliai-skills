@@ -26,11 +26,25 @@ skills: [beiliai-skills]
 
 ## 工作流程
 
-1. **确认连接**：先运行 `python -m beiliai_skills status`。未授权（返回码 3）时，请用户在 WorkBuddy 的连接器里找到“贝礼 AI”点“连接”，用手机号验证码登录（新用户自动注册并赠送体验积分），核对授权码后点“授权”。
+1. **确认连接**：先运行 `python -m beiliai_skills status`。找不到命令或未授权时，按下面“依赖缺失与未授权时的处理”逐步解决，不要直接放弃。
 2. **报价**：`python -m beiliai_skills quote "<链接或整段分享文案>" [--types hot,transition,asr,bgm] [--tier economy|standard|fine]`。默认拆 `hot,transition,asr`；用户只要文案就只选 `asr`。
 3. **确认**：把视频标题、时长、拆解内容、档位、预计积分和当前余额告诉用户，并确认用户拥有该视频的分析权利（自己的视频、已获授权或仅作内部学习）。**没有得到明确同意不要提交。**
 4. **提交并等待**：`python -m beiliai_skills run --quote-id <报价编号> --confirm-rights`。返回码 7 表示仍在拆解，告诉用户进度后用 `python -m beiliai_skills get <任务ID> --wait 110` 继续等。
 5. **讲解结果**：用 `get <任务ID> --full` 读取完整结果，按下面的“拉片报告”格式输出，并附上结果网页链接。需要结构化数据时用 `--json`。
+
+## 依赖缺失与未授权时的处理
+
+每一步都要有结果：能继续就继续，不能继续就把卡在哪、用户下一步做什么讲清楚，不要交出空的报价或空报告，也不要编造积分、余额、报价编号。
+
+1. **找不到命令**（`python -m beiliai_skills` 报 `No module named beiliai_skills`）：说明“贝礼 AI”连接器的运行组件还没装好，直接用下面这条命令安装（固定地址并带校验值，和连接器安装的是同一个包），装好后重新运行 `status`：
+   `{{BEILIAI_WHEEL_INSTALL}}`
+   安装失败（无网络、无 Python）时，告诉用户在 WorkBuddy 的连接器列表里安装并启用“贝礼 AI”。
+2. **未授权**（`status` 返回码 3）：按顺序给用户三种方式，任选其一，完成后重新运行 `status`：
+   - 在 WorkBuddy 连接器列表里找到“贝礼 AI”，点“连接”完成授权；
+   - 已有贝礼 AI 的 API 密钥（sk- 开头）：运行 `python -m beiliai_skills login --api-key -`，从标准输入传入密钥（不要写进命令行参数，也不要回显）；环境里已设置 `BEILIAI_API_KEY` 时可直接使用；
+   - 运行 `python -m beiliai_skills login --start`，把输出的授权链接和授权码发给用户，用户在网页上登录（手机号验证码，新用户自动注册）并点“授权”后，运行 `python -m beiliai_skills login --wait`。
+3. **网络或服务异常**：先运行 `python -m beiliai_skills ping`（无需授权）判断服务是否可达；不可达时如实告诉用户稍后再试，不要反复重试或换方式提交。
+4. **只要报价**：报价不扣费，但同样需要授权；授权完成前只能说明计费方式（按拆解内容和档位计费、失败退回），不要给出具体积分数字。
 
 ## 拉片报告格式
 

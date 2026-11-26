@@ -86,6 +86,13 @@ def workbuddy_skill_md(ver: str) -> bytes:
     return text.encode("utf-8")
 
 
+def wheel_install_command() -> str:
+    """与连接器 cli.json 的 init 相同的安装命令（固定 wheel 地址并带 sha256），供专家在依赖缺失时自行安装。"""
+    wheel = DIST / ("beiliai_skills-%s-py3-none-any.whl" % version())
+    sha = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    return 'python -m pip install --upgrade --disable-pip-version-check "%s%s#sha256=%s"' % (WHEEL_BASE_URL, wheel.name, sha)
+
+
 def build_connector(ver: str, wheel: Path) -> Path:
     wheel_sha = hashlib.sha256(wheel.read_bytes()).hexdigest()
     wheel_url = "%s%s#sha256=%s" % (WHEEL_BASE_URL, wheel.name, wheel_sha)
@@ -158,12 +165,25 @@ def build_expert() -> Path:
     # 专家的 agent 声明了预加载技能 beiliai-skills（agents/*.md 的 skills 字段），技能说明必须随专家包一起提交，
     # 否则审核报“资产包缺少必需资源：技能 beiliai-skills”。内容与连接器里的 WorkBuddy 版技能说明一致。
     assert meta.get("skills") == ["./skills/beiliai-skills"], 'plugin.json 须声明 "skills": ["./skills/beiliai-skills"]'
-    entries = [(top + "/skills/beiliai-skills/SKILL.md", workbuddy_skill_md(version()))]
+    # 专家包里的技能说明额外附上“依赖缺失 / 未授权”兜底（审核要求：依赖缺失时要有可继续的路径）；连接器包里的说明不变。
+    fallback = (
+        "\n## 依赖缺失或未授权时\n\n"
+        "- 找不到 `python -m beiliai_skills`（No module named beiliai_skills）：运行下面的命令安装连接器同款组件（固定地址、带校验值），"
+        "装好后重新运行 `beiliai status`；无法安装时请用户在 WorkBuddy 连接器列表里安装并启用“贝礼 AI”。\n"
+        "  `%s`\n"
+        "- 未授权（返回码 3）：任选其一后重新运行 `beiliai status`——在 WorkBuddy 连接器里连接“贝礼 AI”；"
+        "或 `beiliai login --api-key -` 从标准输入传入已有密钥（已设置 `BEILIAI_API_KEY` 时可直接使用）；"
+        "或 `beiliai login --start` 把链接和授权码给用户，授权后 `beiliai login --wait`。\n"
+        "- 服务不可达：`beiliai ping`（无需授权）确认后如实告诉用户稍后再试；不要交出空的报价或报告，不要编造积分数字。\n"
+    ) % wheel_install_command()
+    entries = [(top + "/skills/beiliai-skills/SKILL.md", workbuddy_skill_md(version()) + fallback.encode("utf-8"))]
     for path in sorted(src.rglob("*")):
         if path.is_file():
             data = path.read_bytes()
             if path.suffix in (".md", ".json"):
                 data = data.replace(b"\r\n", b"\n")
+            if path.suffix == ".md" and b"{{BEILIAI_WHEEL_INSTALL}}" in data:
+                data = data.replace(b"{{BEILIAI_WHEEL_INSTALL}}", wheel_install_command().encode("utf-8"))
             entries.append((top + "/" + path.relative_to(src).as_posix(), data))
     out = DIST / ("%s-expert-%s.zip" % (top, meta["version"]))
     out.write_bytes(zip_bytes(entries))
