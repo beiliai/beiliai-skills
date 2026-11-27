@@ -1,6 +1,6 @@
 {
   "name": "beiliai-lapian",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Short-video breakdown analyst: shot-by-shot analysis of viral videos (structure, shots, camera moves, timed script, BGM) with reusable rewrite advice",
   "author": {
     "name": "Beiliai AI",
